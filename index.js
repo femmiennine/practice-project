@@ -7,6 +7,7 @@ const swaggerJsdoc = require("swagger-jsdoc");
 
 const { connectDB } = require("./config/db");
 const productRouter = require("./routes/products");
+const userRouter = require('./routes/user.route');
 
 const port = process.env.port || 3002;
 const app = express();
@@ -16,7 +17,7 @@ app.listen(port, async () => {
   await connectDB();
 });
 
-// swagger STEP 1 This can be moved to utils then import to index /app
+//SWAGGER
 const options = {
   definition: {
     openapi: "3.0.0",
@@ -33,22 +34,22 @@ const options = {
   },
   apis: ["./controllers/*.js"],
 };
-
 const openapiSpecification = swaggerJsdoc(options);
-
-//import STEP then this is STEP 2 in index/app
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(openapiSpecification));
-// swaggerDocs(app, Number(port))
 
 app.use(cors());
 app.use(morgan("dev"));
-// for parsing application/xwww-form-urlencoded
 app.use(bodyParser.urlencoded({ extended: true }));
-// for parsing application/json
 app.use(bodyParser.json());
 
+//ROUTES
 app.use("/products", productRouter);
+app.use("/users", userRouter);
 
 app.get("/test", (req, res) => {
   res.status(200).send("testing routes working fine");
 });
+
+//ERROR HANDLER
+app.use(clientError)
+app.use(serverError)
